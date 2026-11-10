@@ -2,752 +2,484 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pyramid Game V2</title>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --bg: #0b1020;
-  --panel: #151d31;
-  --line: #2d3a56;
-  --accent: #9baaff;
-  --text: #f4f6fb;
-  --muted: #aab5ca;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  padding: 30px 16px;
-  font-family: Arial, sans-serif;
-  color: var(--text);
-  background: radial-gradient(circle at top, #1b2850, var(--bg) 60%);
-}
-
-.container {
-  max-width: 950px;
-  margin: auto;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 28px;
-}
-
-.logo {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #9baaff, #6878d9);
-  color: #11182c;
-  font-size: 23px;
-  font-weight: bold;
-}
-
-h1 { margin: 0; font-size: 28px; }
-h2 { margin-top: 0; }
-
-.subtitle {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 25px;
-  box-shadow: 0 15px 45px #0005;
-}
-
-p { color: var(--muted); }
-
-label {
-  display: block;
-  margin: 14px 0 6px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #0e1628;
-  color: white;
-  font-size: 15px;
-}
-
-input:focus {
-  outline: 2px solid var(--accent);
-}
-
-button {
-  width: 100%;
-  padding: 13px;
-  margin-top: 18px;
-  border: none;
-  border-radius: 10px;
-  background: var(--accent);
-  color: #11182c;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: .5;
-  cursor: wait;
-}
-
-.message {
-  min-height: 24px;
-  margin-top: 12px;
-  font-size: 13px;
-  white-space: pre-wrap;
-  color: var(--muted);
-}
-
-.error { color: #ff8b9a; }
-.success { color: #8be0b2; }
-
-.hidden { display: none !important; }
-
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 25px;
-}
-
-.avatar {
-  width: 85px;
-  height: 85px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #26324c;
-  border: 2px solid var(--line);
-}
-
-footer {
-  text-align: center;
-  color: #7f8ba4;
-  margin-top: 30px;
-  font-size: 12px;
-}
-
-@media(max-width: 700px) {
-  .grid { grid-template-columns: 1fr; }
-  h1 { font-size: 23px; }
-}
+:root{color-scheme:dark;--bg:#090e19;--panel:#141f33;--panel2:#1b2a43;--line:#30415e;--text:#f2f5fc;--muted:#a3b0c7;--blue:#79aaff;--green:#5bd6a2;--red:#ff7e8b;--gold:#ffd477}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#1b3154,#090e19 65%);font:15px/1.5 system-ui,sans-serif;color:var(--text);min-height:100vh}
+button,input{font:inherit}
+button{background:var(--blue);color:#081326;border:0;border-radius:11px;padding:11px 16px;font-weight:750;cursor:pointer}
+button.secondary{background:#263753;color:white;border:1px solid var(--line)}
+button.danger{background:#592632;color:#ffe8eb}
+button:disabled{opacity:.45;cursor:not-allowed}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0c1526;color:white}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}
+.wrap{max-width:1100px;margin:auto;padding:22px 15px 50px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
+.brand{font-size:21px;font-weight:900;letter-spacing:1px}.brand span{color:var(--blue)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.stack{display:grid;gap:10px}
+.title{font-size:27px;font-weight:900;margin:0}
+.subtitle,.muted{color:var(--muted)}
+.subtitle{margin:3px 0 18px}
+.small{font-size:12px}
+.hidden{display:none!important}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.tabs button{background:#263753;color:#cbd5e8}
+.tabs button.active{background:var(--blue);color:#081326}
+.pill{border:1px solid var(--line);border-radius:30px;padding:4px 10px;font-size:12px;color:var(--muted)}
+.pill.green{color:var(--green)}.pill.red{color:var(--red)}
+.avatar{width:45px;height:45px;object-fit:cover;border-radius:50%;background:#263753;border:1px solid var(--line)}
+.player{display:flex;align-items:center;gap:10px;background:#0d1729;border:1px solid var(--line);border-radius:12px;padding:10px}
+.player .info{flex:1;min-width:0}.player strong{display:block;overflow-wrap:anywhere}
+.player small{color:var(--muted)}
+.notice{padding:12px;border-radius:10px;background:#192d49;border:1px solid #34547b;margin:12px 0}
+.error{background:#3b1e2a;border-color:#783849;color:#ffdce2}
+.success{background:#123126;border-color:#28694f;color:#caffeb}
+.roomcode{font-size:27px;font-weight:900;letter-spacing:5px;color:var(--gold)}
+.vote-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.vote-choice{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0d1729;cursor:pointer}
+.vote-choice input{width:auto}
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:9px;margin:20px auto}
+.rank-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;width:100%}
+.rank-card{width:min(210px,46%);min-width:145px;background:#1a2942;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.rank-card .avatar{width:52px;height:52px;margin-bottom:6px}
+.rank-no{color:var(--gold);font-weight:900}.count{font-size:20px;font-weight:900}
+.footer{text-align:center;color:#72809a;font-size:12px;margin-top:25px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.card{padding:15px}.title{font-size:23px}}
 </style>
 </head>
-
 <body>
-<div class="container">
-
+<div class="wrap">
 <header>
-  <div class="logo">P</div>
-  <div>
-    <h1>Pyramid Game <span style="color:#9baaff">V2</span></h1>
-    <div class="subtitle">Think. Vote. Climb the pyramid.</div>
+  <div class="brand">PYRAMID <span>GAME</span> V2</div>
+  <div class="row">
+    <span id="userBadge" class="pill hidden"></span>
+    <button id="logoutBtn" class="secondary hidden">Log out</button>
   </div>
 </header>
 
-<!-- REGISTRATION AND LOGIN -->
-<section id="authView" class="grid">
-
-  <div class="panel">
-    <h2>Create Account</h2>
-    <p>Join Pyramid Game V2 and create your player profile.</p>
-
-    <form id="signupForm">
-
-      <label>Display Name</label>
-      <input id="signupName"
-        type="text"
-        maxlength="40"
-        placeholder="Your game name"
-        required>
-
-      <label>Email Address</label>
-      <input id="signupEmail"
-        type="email"
-        placeholder="you@example.com"
-        required>
-
-      <label>Password</label>
-      <input id="signupPassword"
-        type="password"
-        minlength="8"
-        placeholder="At least 8 characters"
-        required>
-
-      <button id="signupBtn" type="submit">
-        Create Account
-      </button>
-
-    </form>
-
-    <div id="signupMessage" class="message"></div>
+<section id="authView" class="card" style="max-width:520px;margin:7vh auto">
+  <h1 class="title">Welcome to Pyramid Game</h1>
+  <p class="subtitle">Sign in or create your player account.</p>
+  <div class="tabs">
+    <button id="loginTab" class="active">Log in</button>
+    <button id="signupTab">Create account</button>
   </div>
-
-  <div class="panel">
-    <h2>Welcome Back</h2>
-    <p>Log in using your registered account.</p>
-
-    <form id="loginForm">
-
-      <label>Email Address</label>
-      <input id="loginEmail"
-        type="email"
-        placeholder="you@example.com"
-        required>
-
-      <label>Password</label>
-      <input id="loginPassword"
-        type="password"
-        placeholder="Your password"
-        required>
-
-      <button id="loginBtn" type="submit">
-        Log In
-      </button>
-
-    </form>
-
-    <div id="loginMessage" class="message"></div>
-  </div>
-
+  <form id="authForm">
+    <div id="nameField" class="hidden">
+      <label>Display name</label>
+      <input id="displayName" maxlength="40" placeholder="Your player name">
+    </div>
+    <label>Email address</label>
+    <input id="email" type="email" required placeholder="you@example.com">
+    <label>Password</label>
+    <input id="password" type="password" minlength="8" required placeholder="At least 8 characters">
+    <button id="authSubmit" style="margin-top:15px;width:100%">Log in</button>
+  </form>
+  <div id="authMessage"></div>
+  <p class="small muted">Your password is securely handled by Supabase Authentication.</p>
 </section>
 
-<!-- PLAYER PROFILE -->
-<section id="profileView" class="panel hidden">
-
-  <div class="profile-header">
-    <img id="avatarPreview" class="avatar" alt="Profile picture">
-
-    <div>
-      <h2 id="welcomeName">Player</h2>
-      <div id="accountEmail" class="subtitle"></div>
+<section id="appView" class="hidden">
+  <div class="card">
+    <div class="row between">
+      <div><h1 class="title">Player profile</h1><p class="subtitle">Your identity in the game.</p></div>
+      <span id="rolePill" class="pill">Player</span>
+    </div>
+    <div class="row">
+      <img id="profileAvatar" class="avatar" alt="Profile picture">
+      <div style="flex:1;min-width:180px">
+        <label>Display name</label>
+        <input id="profileName" maxlength="40">
+      </div>
+      <div style="min-width:180px">
+        <label>Profile picture</label>
+        <input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp">
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="saveProfileBtn">Save profile</button>
+      <span id="profileMessage" class="small muted"></span>
     </div>
   </div>
 
-  <h2>Your Player Profile</h2>
-  <p>Customize how other players see you.</p>
+  <div class="tabs">
+    <button id="playTab" class="active">Game</button>
+    <button id="hostTab" class="hidden">Host dashboard</button>
+  </div>
 
-  <form id="profileForm">
+  <section id="playPanel">
+    <div class="grid">
+      <div class="card">
+        <h2>Join a room</h2>
+        <p class="muted">Enter the code provided by your host.</p>
+        <label>Room code</label>
+        <input id="joinCode" maxlength="12" placeholder="Enter room code">
+        <button id="joinBtn" style="margin-top:12px">Join room</button>
+      </div>
+      <div class="card">
+        <h2>Your current room</h2>
+        <div id="currentRoom" class="muted">You have not joined a room yet.</div>
+        <button id="leaveBtn" class="secondary hidden" style="margin-top:12px">Leave room</button>
+      </div>
+    </div>
 
-    <label>Display Name</label>
-    <input id="profileName"
-      type="text"
-      maxlength="40"
-      required>
+    <div id="roomPanel" class="card hidden">
+      <div class="row between">
+        <div><h2 id="roomTitle">Game room</h2><span class="muted small">Room code: </span><strong id="playerRoomCode"></strong></div>
+        <span id="roomStatus" class="pill"></span>
+      </div>
+      <div class="grid">
+        <div><h3>Players</h3><div id="memberList" class="stack"></div></div>
+        <div><h3>Current round</h3><div id="roundInfo" class="muted">No active round.</div></div>
+      </div>
+      <div id="votingPanel" class="hidden" style="margin-top:20px">
+        <h3>Cast your votes</h3>
+        <p id="voteInstruction" class="muted"></p>
+        <div id="voteChoices" class="vote-list"></div>
+        <button id="submitVotesBtn" style="margin-top:14px">Submit votes privately</button>
+        <div id="voteMessage"></div>
+      </div>
+      <div id="waitingPanel" class="notice">Wait for the host to open voting or reveal results.</div>
+      <div id="resultsPanel" class="hidden">
+        <h3>Pyramid results</h3>
+        <div id="pyramidResults" class="pyramid"></div>
+      </div>
+    </div>
+  </section>
 
-    <label>Profile Picture</label>
-    <input id="avatarFile"
-      type="file"
-      accept="image/jpeg,image/png,image/webp">
+  <section id="hostPanel" class="hidden">
+    <div class="card">
+      <h2>Host dashboard</h2>
+      <p class="subtitle">Only an authorized host can create rooms.</p>
+      <div class="grid">
+        <div>
+          <label>Room name</label>
+          <input id="newRoomName" maxlength="60" placeholder="e.g. Section Iron">
+          <button id="createRoomBtn" style="margin-top:12px">Create room</button>
+        </div>
+        <div id="hostRoomSummary"><p class="muted">No room selected.</p></div>
+      </div>
+      <div id="hostMessage"></div>
+    </div>
 
-    <button id="saveProfileBtn" type="submit">
-      Save Profile
-    </button>
-
-  </form>
-
-  <div id="profileMessage" class="message"></div>
-
-  <button id="logoutBtn" type="button"
-    style="background:#26324c;color:white">
-    Log Out
-  </button>
-
+    <div id="hostControls" class="card hidden">
+      <div class="row between">
+        <div><h2>Room controls</h2><div class="roomcode" id="hostRoomCode"></div><div id="hostRoomName" class="muted"></div></div>
+        <span id="hostRoomStatus" class="pill"></span>
+      </div>
+      <div class="row" style="margin:14px 0">
+        <button id="toggleRoomBtn" class="secondary">Close room</button>
+        <button id="newRoundBtn">Start new round</button>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Voting settings</h3>
+          <label>Votes per player</label>
+          <input id="voteLimit" type="number" min="1" max="50" value="1">
+          <button id="saveVoteLimitBtn" class="secondary" style="margin-top:10px">Save vote limit</button>
+          <div class="row" style="margin-top:12px">
+            <button id="openVotingBtn">Open voting</button>
+            <button id="closeVotingBtn" class="danger">Close voting</button>
+          </div>
+          <button id="revealBtn" class="secondary" style="margin-top:10px">Reveal results</button>
+          <div id="hostRoundMessage"></div>
+        </div>
+        <div class="card">
+          <h3>Player monitoring</h3>
+          <p class="small muted">Online status uses recent activity.</p>
+          <div id="hostPlayerList" class="stack"></div>
+        </div>
+      </div>
+      <h3>Room players</h3><div id="hostMembers" class="stack"></div>
+      <h3>Revealed ranking</h3><div id="hostResults" class="pyramid"></div>
+    </div>
+  </section>
 </section>
-
-<footer>
-  Pyramid Game V2 · Independent from Version 1
-</footer>
-
+<div class="footer">Pyramid Game V2 · Play fair. Keep every vote private.</div>
 </div>
 
-<script type="module">
-
-import { createClient }
-from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
-
-// ==================================
-// SUPABASE CONNECTION
-// ==================================
-
-const SUPABASE_URL =
-"https://tatcfimepvgyvbhvmiud.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_KfhZyLnXufBnRJSvmkqULg_02R5o4WH";
-
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-
-// ==================================
-// VARIABLES
-// ==================================
-
+<script>
+(() => {
+const URL = "https://tatcfimepvgyvbhvmiud.supabase.co";
+const KEY = "sb_publishable_KfhZyLnXufBnRJSvmkqULg_02R5o4WH";
+const db = window.supabase.createClient(URL,KEY);
 const $ = id => document.getElementById(id);
+const S = {user:null,profile:null,room:null,members:[],round:null,isHost:false,mode:"login",channel:null,timers:[]};
+const fallback = "data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" rx="50" fill="#263753"/><circle cx="50" cy="37" r="18" fill="#9eb0ce"/><path d="M15 95c3-23 17-34 35-34s32 11 35 34" fill="#9eb0ce"/></svg>');
+const esc = v => String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const avatar = url => url||fallback;
+function message(id,text,type=""){const e=$(id);e.className=type?"notice "+type:"";e.textContent=text||"";}
+async function rpc(name,args){const {data,error}=await db.rpc(name,args);if(error)throw error;return data;}
 
-let currentUser = null;
-let currentAvatarUrl = null;
+function authMode(mode){
+ S.mode=mode;
+ $("loginTab").classList.toggle("active",mode==="login");
+ $("signupTab").classList.toggle("active",mode==="signup");
+ $("nameField").classList.toggle("hidden",mode!=="signup");
+ $("authSubmit").textContent=mode==="login"?"Log in":"Create account";
+ message("authMessage","");
+}
+$("loginTab").onclick=()=>authMode("login");
+$("signupTab").onclick=()=>authMode("signup");
 
+$("authForm").onsubmit=async e=>{
+ e.preventDefault();$("authSubmit").disabled=true;message("authMessage","Please wait…");
+ try{
+  const email=$("email").value.trim(),password=$("password").value;
+  if(S.mode==="signup"){
+   const name=$("displayName").value.trim();if(!name)throw Error("Enter a display name.");
+   const {data,error}=await db.auth.signUp({email,password,options:{data:{display_name:name}}});
+   if(error)throw error;
+   if(!data.session)message("authMessage","Account created. Check your email to confirm, then log in.","success");
+   else message("authMessage","Account created.","success");
+  }else{
+   const {error}=await db.auth.signInWithPassword({email,password});if(error)throw error;
+  }
+ }catch(e){message("authMessage",e.message,"error");}
+ finally{$("authSubmit").disabled=false;}
+};
 
-// ==================================
-// MESSAGE HANDLER
-// ==================================
+async function loadProfile(){
+ const {data,error}=await db.from("profiles").select("*").eq("id",S.user.id).single();
+ if(error)throw error;S.profile=data;
+ $("profileName").value=data.display_name||S.user.user_metadata?.display_name||"";
+ $("profileAvatar").src=avatar(data.avatar_url);
+ $("userBadge").textContent=data.display_name||S.user.email;
+ $("userBadge").classList.remove("hidden");
+}
+async function saveProfile(){
+ const name=$("profileName").value.trim();if(!name)throw Error("Display name cannot be empty.");
+ let avatarUrl=S.profile?.avatar_url||null;const file=$("avatarFile").files[0];
+ if(file){
+  if(file.size>2*1024*1024)throw Error("Image must be 2 MB or smaller.");
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type))throw Error("Use JPG, PNG, or WebP.");
+  const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";
+  const path=`${S.user.id}/avatar-${Date.now()}.${ext}`;
+  const {error}=await db.storage.from("avatars").upload(path,file,{contentType:file.type});
+  if(error)throw error;
+  avatarUrl=db.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+ }
+ const {data,error}=await db.from("profiles").update({display_name:name,avatar_url:avatarUrl}).eq("id",S.user.id).select().single();
+ if(error)throw error;S.profile=data;
+ $("profileAvatar").src=avatar(avatarUrl);$("userBadge").textContent=name;$("avatarFile").value="";
+ message("profileMessage","Profile saved.","success");
+}
+$("saveProfileBtn").onclick=async()=>{
+ try{$("saveProfileBtn").disabled=true;await saveProfile();}
+ catch(e){message("profileMessage",e.message,"error");}
+ finally{$("saveProfileBtn").disabled=false;}
+};
 
-function showMessage(id, message, type = "") {
-  const element = $(id);
-  element.textContent = message;
-  element.className = "message " + type;
+async function checkHost(){
+ const {data,error}=await db.from("room_creator_allowlist").select("user_id").eq("user_id",S.user.id).maybeSingle();
+ if(error){console.warn("Host authorization check:",error.message);return false;}
+ return !!data;
+}
+async function enterApp(){
+ const {data}=await db.auth.getUser();S.user=data.user;if(!S.user)return;
+ $("authView").classList.add("hidden");$("appView").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");
+ await loadProfile();
+ S.isHost=await checkHost();
+ $("rolePill").textContent=S.isHost?"Authorized host":"Player";
+ $("hostTab").classList.toggle("hidden",!S.isHost);
+ await discoverRoom();
+ startTimers();
+}
+async function discoverRoom(){
+ const {data,error}=await db.from("room_members").select("room_id,rooms(*)").eq("player_id",S.user.id).order("joined_at",{ascending:false}).limit(1);
+ if(error)throw error;
+ S.room=data?.[0]?.rooms||null;
+ if(S.room)await refreshRoom();else renderCurrentRoom();
+}
+function code(room){return room?.room_code||room?.code||"—";}
+function renderCurrentRoom(){
+ if(!S.room){$("currentRoom").textContent="You have not joined a room yet.";$("leaveBtn").classList.add("hidden");return;}
+ $("currentRoom").innerHTML=`<strong>${esc(S.room.room_name)}</strong><div class="roomcode">${esc(code(S.room))}</div><span class="pill">${S.room.is_open?"Open":"Closed"}</span>`;
+ $("leaveBtn").classList.remove("hidden");
+}
+async function refreshRoom(){
+ if(!S.room){renderCurrentRoom();return;}
+ const {data:room,error}=await db.from("rooms").select("*").eq("id",S.room.id).single();if(error)throw error;S.room=room;
+ const {data:members,error:me}=await db.from("room_members").select("player_id,joined_at,profiles(display_name,avatar_url)").eq("room_id",room.id);if(me)throw me;S.members=members||[];
+ const {data:rounds,error:re}=await db.from("rounds").select("*").eq("room_id",room.id).order("created_at",{ascending:false}).limit(1);if(re)throw re;S.round=rounds?.[0]||null;
+ renderCurrentRoom();renderRoom();
+ if(S.isHost&&S.room.host_id===S.user.id)await renderHost();
+}
+function renderRoom(){
+ $("roomPanel").classList.remove("hidden");
+ $("roomTitle").textContent=S.room.room_name||"Game room";
+ $("playerRoomCode").textContent=code(S.room);
+ $("roomStatus").textContent=S.room.is_open?"Open":"Closed";
+ $("roomStatus").className="pill "+(S.room.is_open?"green":"red");
+ $("memberList").innerHTML=S.members.map(m=>`<div class="player"><img class="avatar" src="${esc(avatar(m.profiles?.avatar_url))}"><div class="info"><strong>${esc(m.profiles?.display_name||"Player")}</strong><small>${m.player_id===S.room.host_id?"Host":"Player"}</small></div></div>`).join("")||'<p class="muted">No players yet.</p>';
+ const r=S.round;
+ $("roundInfo").innerHTML=r?`<p><strong>Round ${esc(r.round_number)}</strong></p><p>${r.voting_open?"Voting is open":"Voting is closed"}</p><p>${esc(r.votes_per_player)} vote(s) per player</p>`:"No active round.";
+ $("votingPanel").classList.add("hidden");$("resultsPanel").classList.add("hidden");$("waitingPanel").classList.remove("hidden");
+ if(r){
+  checkSubmission(r.id).then(done=>{
+   const canVote=r.voting_open&&S.room.is_open&&!done;
+   $("votingPanel").classList.toggle("hidden",!canVote);
+   $("waitingPanel").classList.toggle("hidden",canVote||r.results_revealed);
+   if(canVote){$("voteInstruction").textContent=`Choose exactly ${r.votes_per_player} different players.`;renderVoteChoices();}
+   if(r.results_revealed){$("resultsPanel").classList.remove("hidden");loadResults(r.id,"pyramidResults");}
+  });
+ }
+}
+async function checkSubmission(roundId){
+ const {data,error}=await db.from("round_submissions").select("id").eq("round_id",roundId).eq("player_id",S.user.id).maybeSingle();
+ if(error){console.warn(error);return false;}return !!data;
+}
+function renderVoteChoices(){
+ $("voteChoices").innerHTML=S.members.filter(m=>m.player_id!==S.user.id).map(m=>`<label class="vote-choice"><input type="checkbox" value="${m.player_id}"><img class="avatar" src="${esc(avatar(m.profiles?.avatar_url))}"><span>${esc(m.profiles?.display_name||"Player")}</span></label>`).join("");
+ $("voteChoices").querySelectorAll("input").forEach(input=>input.onchange=()=>{
+  const selected=$("voteChoices").querySelectorAll("input:checked");
+  if(selected.length>Number(S.round.votes_per_player)){input.checked=false;message("voteMessage","You selected too many players.","error");}
+  else message("voteMessage","");
+ });
+}
+$("submitVotesBtn").onclick=async()=>{
+ try{
+  const ids=[...$("voteChoices").querySelectorAll("input:checked")].map(x=>x.value);
+  if(ids.length!==Number(S.round.votes_per_player))throw Error(`Select exactly ${S.round.votes_per_player} players.`);
+  $("submitVotesBtn").disabled=true;
+  await rpc("submit_round_votes",{p_round_id:S.round.id,p_target_ids:ids});
+  message("voteMessage","Your votes have been submitted privately.","success");await refreshRoom();
+ }catch(e){message("voteMessage",e.message,"error");}
+ finally{$("submitVotesBtn").disabled=false;}
+};
+async function loadResults(roundId,target){
+ try{
+  const rows=await rpc("get_pyramid_results",{p_round_id:roundId});
+  const groups=new Map();
+  (rows||[]).forEach(p=>{if(!groups.has(p.player_rank))groups.set(p.player_rank,[]);groups.get(p.player_rank).push(p);});
+  $(target).innerHTML=[...groups.entries()].map(([rank,players])=>`<div class="rank-row">${players.map(p=>`<div class="rank-card"><div class="rank-no">RANK ${esc(rank)}</div><img class="avatar" src="${esc(avatar(p.avatar_url))}"><div><strong>${esc(p.display_name)}</strong></div><div class="count">${esc(p.vote_count)} votes</div></div>`).join("")}</div>`).join("")||'<p class="muted">No results.</p>';
+ }catch(e){$(target).textContent=e.message;}
+}
+$("joinBtn").onclick=async()=>{
+ try{const codeValue=$("joinCode").value.trim().toUpperCase();if(!codeValue)throw Error("Enter a room code.");
+  await rpc("join_game_room",{p_room_code:codeValue});await discoverRoom();
+ }catch(e){message("authMessage",e.message,"error");}
+};
+$("leaveBtn").onclick=async()=>{
+ if(!confirm("Leave this room?"))return;
+ try{
+  const {error}=await db.from("room_members").delete().eq("room_id",S.room.id).eq("player_id",S.user.id);
+  if(error)throw error;S.room=null;S.round=null;$("roomPanel").classList.add("hidden");renderCurrentRoom();
+ }catch(e){message("authMessage",e.message,"error");}
+};
+
+$("playTab").onclick=()=>{
+ $("playTab").classList.add("active");$("hostTab").classList.remove("active");
+ $("playPanel").classList.remove("hidden");$("hostPanel").classList.add("hidden");
+};
+$("hostTab").onclick=()=>{
+ $("hostTab").classList.add("active");$("playTab").classList.remove("active");
+ $("hostPanel").classList.remove("hidden");$("playPanel").classList.add("hidden");renderHost();
+};
+async function renderHost(){
+ if(!S.isHost)return;
+ const {data:rooms,error}=await db.from("rooms").select("*").eq("host_id",S.user.id).order("created_at",{ascending:false});
+ if(error){message("hostMessage",error.message,"error");return;}
+ $("hostRoomSummary").innerHTML=rooms?.length?`<label>Select your room</label><select id="hostRoomSelect">${rooms.map(r=>`<option value="${r.id}" ${S.room?.id===r.id?"selected":""}>${esc(r.room_name)} — ${esc(code(r))}</option>`).join("")}</select>`:"<p class='muted'>You have no rooms yet.</p>";
+ if($("hostRoomSelect"))$("hostRoomSelect").onchange=async e=>{S.room=rooms.find(r=>r.id===e.target.value);await refreshRoom();};
+ if(!S.room||S.room.host_id!==S.user.id){$("hostControls").classList.add("hidden");return;}
+ $("hostControls").classList.remove("hidden");
+ $("hostRoomCode").textContent=code(S.room);$("hostRoomName").textContent=S.room.room_name;
+ $("hostRoomStatus").textContent=S.room.is_open?"Open":"Closed";
+ $("toggleRoomBtn").textContent=S.room.is_open?"Close room":"Open room";
+ $("voteLimit").value=S.round?.votes_per_player||1;
+ $("openVotingBtn").disabled=!S.round||!S.room.is_open||S.round.voting_open;
+ $("closeVotingBtn").disabled=!S.round||!S.round.voting_open;
+ $("revealBtn").disabled=!S.round||S.round.voting_open||S.round.results_revealed;
+ await renderHostPlayers();
+ if(S.round?.results_revealed)await loadResults(S.round.id,"hostResults");
+ else $("hostResults").innerHTML='<p class="muted">Results will appear after reveal.</p>';
+}
+$("createRoomBtn").onclick=async()=>{
+ try{
+  const name=$("newRoomName").value.trim();if(!name)throw Error("Enter a room name.");
+  $("createRoomBtn").disabled=true;
+  const result=await rpc("create_game_room",{p_room_name:name});
+  const created=Array.isArray(result)?result[0]:result;
+  if(created?.id)S.room=created;
+  await discoverRoom();await renderHost();
+  message("hostMessage","Room created successfully.","success");
+ }catch(e){message("hostMessage",e.message,"error");}
+ finally{$("createRoomBtn").disabled=false;}
+};
+$("toggleRoomBtn").onclick=async()=>{
+ try{await rpc("set_room_status",{p_room_id:S.room.id,p_is_open:!S.room.is_open});await refreshRoom();}
+ catch(e){message("hostRoundMessage",e.message,"error");}
+};
+$("newRoundBtn").onclick=async()=>{
+ try{await rpc("create_game_round",{p_room_id:S.room.id});await refreshRoom();message("hostRoundMessage","New round created.","success");}
+ catch(e){message("hostRoundMessage",e.message,"error");}
+};
+$("saveVoteLimitBtn").onclick=async()=>{
+ try{const n=Number($("voteLimit").value);if(!Number.isInteger(n)||n<1)throw Error("Enter a whole number greater than zero.");
+  await rpc("set_round_vote_limit",{p_round_id:S.round.id,p_votes_per_player:n});await refreshRoom();message("hostRoundMessage","Vote limit saved.","success");
+ }catch(e){message("hostRoundMessage",e.message,"error");}
+};
+$("openVotingBtn").onclick=async()=>{
+ try{await rpc("set_voting_status",{p_round_id:S.round.id,p_voting_open:true});await refreshRoom();message("hostRoundMessage","Voting is open.","success");}
+ catch(e){message("hostRoundMessage",e.message,"error");}
+};
+$("closeVotingBtn").onclick=async()=>{
+ try{await rpc("set_voting_status",{p_round_id:S.round.id,p_voting_open:false});await refreshRoom();message("hostRoundMessage","Voting is closed.","success");}
+ catch(e){message("hostRoundMessage",e.message,"error");}
+};
+$("revealBtn").onclick=async()=>{
+ try{await rpc("reveal_round_results",{p_round_id:S.round.id});await refreshRoom();message("hostRoundMessage","Results revealed.","success");}
+ catch(e){message("hostRoundMessage",e.message,"error");}
+};
+async function renderHostPlayers(){
+ if(!S.round)return;
+ try{
+  const rows=await rpc("get_room_player_status",{p_room_id:S.room.id,p_round_id:S.round.id});
+  $("hostPlayerList").innerHTML=(rows||[]).map(p=>`<div class="player"><img class="avatar" src="${esc(avatar(p.avatar_url))}"><div class="info"><strong>${esc(p.display_name)}</strong><small>${p.has_submitted?"Submitted":"Not submitted"}</small></div><span class="pill ${p.is_online?"green":"red"}">${p.is_online?"Online":"Offline"}</span></div>`).join("")||'<p class="muted">No players yet.</p>';
+ }catch(e){$("hostPlayerList").textContent=e.message;}
+ $("hostMembers").innerHTML=S.members.map(m=>`<div class="player"><img class="avatar" src="${esc(avatar(m.profiles?.avatar_url))}"><div class="info"><strong>${esc(m.profiles?.display_name||"Player")}</strong><small>${m.player_id===S.room.host_id?"Host":"Member"}</small></div></div>`).join("");
 }
 
-function setBusy(button, busy, label) {
-  button.disabled = busy;
-
-  if (busy) {
-    button.dataset.original = button.textContent;
-    button.textContent = label;
-  } else if (button.dataset.original) {
-    button.textContent = button.dataset.original;
-  }
+async function activity(){
+ if(!S.room)return;
+ try{await rpc("update_player_activity",{p_room_id:S.room.id});}catch(e){console.debug(e.message);}
 }
-
-
-// ==================================
-// DEFAULT AVATAR
-// ==================================
-
-function defaultAvatar(name = "P") {
-  const letter = (name.trim()[0] || "P").toUpperCase();
-
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg"
-      width="120" height="120">
-      <rect width="100%" height="100%"
-        rx="60" fill="#283654"/>
-      <text x="50%" y="55%"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        font-family="Arial"
-        font-size="54"
-        fill="#c8d0ff">${letter}</text>
-    </svg>`;
-
-  return "data:image/svg+xml," +
-    encodeURIComponent(svg);
+function startTimers(){
+ S.timers.forEach(clearInterval);S.timers=[];
+ activity();S.timers.push(setInterval(activity,20000));
+ S.timers.push(setInterval(async()=>{if(S.room){try{await refreshRoom();}catch(e){console.warn(e);}}},10000));
 }
-
-
-// ==================================
-// DISPLAY AUTHENTICATION
-// ==================================
-
-function showAuth() {
-  $("authView").classList.remove("hidden");
-  $("profileView").classList.add("hidden");
+function subscribe(){
+ if(S.channel)db.removeChannel(S.channel);
+ S.channel=db.channel("pyramid-game-live")
+ .on("postgres_changes",{event:"*",schema:"public",table:"rooms"},()=>{if(S.room)refreshRoom();})
+ .on("postgres_changes",{event:"*",schema:"public",table:"room_members"},()=>{if(S.room)refreshRoom();})
+ .on("postgres_changes",{event:"*",schema:"public",table:"rounds"},()=>{if(S.room)refreshRoom();})
+ .on("postgres_changes",{event:"*",schema:"public",table:"round_submissions"},()=>{if(S.room)refreshRoom();})
+ .subscribe();
 }
-
-
-// ==================================
-// LOAD PLAYER PROFILE
-// ==================================
-
-async function loadProfile(user) {
-
-  currentUser = user;
-
-  $("authView").classList.add("hidden");
-  $("profileView").classList.remove("hidden");
-
-  $("accountEmail").textContent = user.email || "";
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("display_name, avatar_url")
-    .eq("id", user.id)
-    .single();
-
-  if (error) {
-    showMessage(
-      "profileMessage",
-      "Unable to load profile: " + error.message,
-      "error"
-    );
-    return;
-  }
-
-  const name = data.display_name || "Player";
-
-  currentAvatarUrl = data.avatar_url || null;
-
-  $("welcomeName").textContent = name;
-  $("profileName").value = name;
-
-  $("avatarPreview").src =
-    currentAvatarUrl || defaultAvatar(name);
-
-  showMessage(
-    "profileMessage",
-    "Your account is ready.",
-    "success"
-  );
-}
-
-
-// ==================================
-// PLAYER REGISTRATION
-// ==================================
-
-$("signupForm").addEventListener(
-  "submit",
-  async event => {
-
-    event.preventDefault();
-
-    const button = $("signupBtn");
-
-    const displayName =
-      $("signupName").value.trim();
-
-    const email =
-      $("signupEmail").value.trim();
-
-    const password =
-      $("signupPassword").value;
-
-    if (displayName.length < 2) {
-      showMessage(
-        "signupMessage",
-        "Display name must have at least 2 characters.",
-        "error"
-      );
-      return;
-    }
-
-    setBusy(button, true, "Creating account...");
-
-    showMessage("signupMessage", "");
-
-    const { data, error } =
-      await supabase.auth.signUp({
-
-        email,
-        password,
-
-        options: {
-          data: {
-            display_name: displayName
-          }
-        }
-
-      });
-
-    setBusy(button, false);
-
-    if (error) {
-      showMessage(
-        "signupMessage",
-        error.message,
-        "error"
-      );
-      return;
-    }
-
-    if (data.session && data.user) {
-
-      await loadProfile(data.user);
-
-    } else {
-
-      showMessage(
-        "signupMessage",
-        "Account created! Check your email for the confirmation link. Then log in.",
-        "success"
-      );
-
-    }
-
-  }
-);
-
-
-// ==================================
-// PLAYER LOGIN
-// ==================================
-
-$("loginForm").addEventListener(
-  "submit",
-  async event => {
-
-    event.preventDefault();
-
-    const button = $("loginBtn");
-
-    setBusy(button, true, "Logging in...");
-
-    showMessage("loginMessage", "");
-
-    const { data, error } =
-      await supabase.auth.signInWithPassword({
-
-        email: $("loginEmail").value.trim(),
-
-        password: $("loginPassword").value
-
-      });
-
-    setBusy(button, false);
-
-    if (error) {
-
-      showMessage(
-        "loginMessage",
-        error.message,
-        "error"
-      );
-
-      return;
-    }
-
-    await loadProfile(data.user);
-
-  }
-);
-
-
-// ==================================
-// UPDATE PROFILE AND AVATAR
-// ==================================
-
-$("profileForm").addEventListener(
-  "submit",
-  async event => {
-
-    event.preventDefault();
-
-    if (!currentUser) return;
-
-    const button = $("saveProfileBtn");
-
-    const displayName =
-      $("profileName").value.trim();
-
-    const file =
-      $("avatarFile").files[0];
-
-    if (displayName.length < 2) {
-      showMessage(
-        "profileMessage",
-        "Display name must have at least 2 characters.",
-        "error"
-      );
-      return;
-    }
-
-    if (file && file.size > 2 * 1024 * 1024) {
-      showMessage(
-        "profileMessage",
-        "Image must not exceed 2 MB.",
-        "error"
-      );
-      return;
-    }
-
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp"
-    ];
-
-    if (file && !allowedTypes.includes(file.type)) {
-      showMessage(
-        "profileMessage",
-        "Use JPG, PNG, or WebP only.",
-        "error"
-      );
-      return;
-    }
-
-    setBusy(button, true, "Saving profile...");
-
-    showMessage("profileMessage", "");
-
-    let avatarUrl = currentAvatarUrl;
-
-    // UPLOAD PROFILE PICTURE
-    if (file) {
-
-      const extension =
-        file.type === "image/png" ? "png" :
-        file.type === "image/webp" ? "webp" : "jpg";
-
-      const filePath =
-        `${currentUser.id}/profile.${extension}`;
-
-      const { error: uploadError } =
-        await supabase.storage
-          .from("avatars")
-          .upload(filePath, file, {
-            upsert: true,
-            contentType: file.type
-          });
-
-      if (uploadError) {
-
-        setBusy(button, false);
-
-        showMessage(
-          "profileMessage",
-          "Image upload failed: " + uploadError.message,
-          "error"
-        );
-
-        return;
-      }
-
-      avatarUrl =
-        supabase.storage
-          .from("avatars")
-          .getPublicUrl(filePath)
-          .data.publicUrl;
-
-    }
-
-
-    // UPDATE PROFILE DATABASE
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        display_name: displayName,
-        avatar_url: avatarUrl
-      })
-      .eq("id", currentUser.id);
-
-    setBusy(button, false);
-
-    if (error) {
-
-      showMessage(
-        "profileMessage",
-        "Profile update failed: " + error.message,
-        "error"
-      );
-
-      return;
-    }
-
-    currentAvatarUrl = avatarUrl;
-
-    $("welcomeName").textContent = displayName;
-
-    $("avatarPreview").src =
-      avatarUrl || defaultAvatar(displayName);
-
-    $("avatarFile").value = "";
-
-    showMessage(
-      "profileMessage",
-      "Your profile has been saved!",
-      "success"
-    );
-
-  }
-);
-
-
-// ==================================
-// LOGOUT
-// ==================================
-
-$("logoutBtn").addEventListener(
-  "click",
-  async () => {
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      showMessage(
-        "profileMessage",
-        error.message,
-        "error"
-      );
-      return;
-    }
-
-    currentUser = null;
-    currentAvatarUrl = null;
-
-    showAuth();
-
-  }
-);
-
-
-// ==================================
-// AUTHENTICATION SESSION
-// ==================================
-
-supabase.auth.onAuthStateChange(
-  (event, session) => {
-
-    if (session?.user && !currentUser) {
-
-      setTimeout(
-        () => loadProfile(session.user),
-        0
-      );
-
-    } else if (!session) {
-
-      currentUser = null;
-      currentAvatarUrl = null;
-
-      showAuth();
-
-    }
-
-  }
-);
-
-
-// ==================================
-// CHECK EXISTING SESSION
-// ==================================
-
-const {
-  data: { session }
-} = await supabase.auth.getSession();
-
-if (session?.user) {
-  await loadProfile(session.user);
-} else {
-  showAuth();
-}
-
+$("logoutBtn").onclick=async()=>{
+ S.timers.forEach(clearInterval);if(S.channel)await db.removeChannel(S.channel);
+ await db.auth.signOut();location.reload();
+};
+db.auth.onAuthStateChange((event,session)=>{
+ if(session?.user&&$("appView").classList.contains("hidden")){
+  setTimeout(()=>enterApp().catch(e=>message("authMessage",e.message,"error")),0);
+ }
+});
+(async()=>{
+ const {data}=await db.auth.getSession();
+ if(data.session){try{await enterApp();subscribe();}catch(e){$("authView").classList.remove("hidden");message("authMessage",e.message,"error");}}
+})();
+})();
 </script>
 </body>
 </html>
